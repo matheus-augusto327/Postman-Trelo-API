@@ -368,7 +368,9 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
-							"});"
+							"});\r",
+							"\r",
+							"pm.environment.set(\"deleteBoardRequestId\", pm.info.requestId);"
 						],
 						"type": "text/javascript"
 					}
@@ -461,6 +463,66 @@
 						{
 							"key": "id",
 							"value": "{{boardId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all boards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"let firstBoard = response.shift();\r",
+							"\r",
+							"if (firstBoard) {\r",
+							"    console.log(firstBoard.id);\r",
+							"\r",
+							"    pm.environment.set(\"boardId\", firstBoard.id);\r",
+							"\r",
+							"    postman.setNextRequest(pm.environment.get(\"deleteBoardRequestId\"));\r",
+							"} else {\r",
+							"    postman.setNextRequest(null);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.trello.com/1/members/matheusaugusto46/boards?key={{trelloKey}}&token={{trelloToken}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"members",
+						"matheusaugusto46",
+						"boards"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
 						}
 					]
 				}
